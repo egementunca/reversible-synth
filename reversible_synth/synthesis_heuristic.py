@@ -52,7 +52,7 @@ class TransformationSynthesizer:
             best_dist = current_dist
             
             for gate, gate_perm in self.gate_perms:
-                new_perm = gate_perm * current
+                new_perm = current * gate_perm
                 new_dist = self._distance(new_perm, target)
                 
                 if new_dist < best_dist:
@@ -64,7 +64,7 @@ class TransformationSynthesizer:
                 # Stuck - try random gate to escape
                 gate, gate_perm = random.choice(self.gate_perms)
                 circuit.prepend(gate)
-                current = gate_perm * current
+                current = current * gate_perm
             else:
                 circuit.prepend(best_gate)
                 current = best_perm
@@ -106,7 +106,7 @@ class TransformationSynthesizer:
             # Find all improving moves
             improving = []
             for gate, gate_perm in self.gate_perms:
-                new_perm = gate_perm * current
+                new_perm = current * gate_perm
                 new_dist = self._distance(new_perm, target)
                 if new_dist < current_dist:
                     improving.append((gate, gate_perm, new_dist))
@@ -121,7 +121,7 @@ class TransformationSynthesizer:
                 gate, gate_perm = random.choice(self.gate_perms)
             
             circuit.prepend(gate)
-            current = gate_perm * current
+            current = current * gate_perm
         
         return circuit if current == target else None
 
@@ -160,7 +160,7 @@ class OutputPermutationSynthesizer:
                 best_score = -1
                 
                 for gate, gate_perm in self.gate_perms:
-                    new_perm = gate_perm * current
+                    new_perm = current * gate_perm
                     
                     # Check we don't break already-fixed positions
                     breaks_fixed = False

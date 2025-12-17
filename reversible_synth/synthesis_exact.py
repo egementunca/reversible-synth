@@ -52,7 +52,7 @@ class ExactSynthesizer:
                 continue
             
             for gate, gate_perm in self.gate_perms:
-                new_perm = gate_perm * current_perm
+                new_perm = current_perm * gate_perm
                 
                 if new_perm == target:
                     result = current_circuit.copy()
@@ -70,7 +70,16 @@ class ExactSynthesizer:
     def synthesize_bidirectional(self, target: Permutation, max_depth: int = 10) -> Optional[Circuit]:
         """
         Bidirectional BFS: search from both identity and target.
-        Generally faster than standard BFS.
+        
+        Forward: builds circuits from identity, forward[perm] = circuit C where C.to_perm() == perm
+        Backward: builds circuits from target, backward[perm] = circuit C where C.to_perm() == perm
+                  (starting from target, applying C gives perm)
+        
+        When meeting at P:
+          - forward[P].to_perm() == P (identity -> P)
+          - backward[P].to_perm() == P (target -> P)
+          - backward[P].inverse() takes P -> target
+          - So: forward[P] + backward[P].inverse() = identity -> P -> target
         """
         if target.n_bits != self.n_bits:
             raise ValueError("Target permutation has wrong number of bits")
@@ -80,16 +89,16 @@ class ExactSynthesizer:
         if target == identity:
             return Circuit.empty(self.n_bits)
         
-        # Forward: from identity toward target
-        # Backward: from target toward identity
+        # forward[perm] = circuit C such that C.to_permutation() == perm
         forward: Dict[Permutation, Circuit] = {identity: Circuit.empty(self.n_bits)}
+        # backward[perm] = circuit C such that starting from target and applying C gives perm
         backward: Dict[Permutation, Circuit] = {target: Circuit.empty(self.n_bits)}
         
         forward_queue = deque([identity])
         backward_queue = deque([target])
         
         for depth in range(max_depth // 2 + 1):
-            # Expand forward
+            # Expand forward (same as BFS: prepend gate, new_perm = current * gate_perm)
             next_forward = deque()
             while forward_queue:
                 current = forward_queue.popleft()
@@ -100,14 +109,15 @@ class ExactSynthesizer:
                     continue
                 
                 for gate, gate_perm in self.gate_perms:
-                    new_perm = gate_perm * current
+                    new_perm = current * gate_perm
                     
                     if new_perm in backward:
-                        # Found meeting point!
+                        # forward reaches new_perm, backward reaches new_perm from target
+                        # Combined: forward + backward.inverse() = identity -> target
                         fwd_circuit = current_circuit.copy()
                         fwd_circuit.prepend(gate)
-                        bwd_circuit = backward[new_perm].inverse()
-                        return fwd_circuit.concatenate(bwd_circuit)
+                        bwd_circuit = backward[new_perm]
+                        return fwd_circuit.concatenate(bwd_circuit.inverse())
                     
                     if new_perm not in forward:
                         new_circuit = current_circuit.copy()
@@ -117,7 +127,7 @@ class ExactSynthesizer:
             
             forward_queue = next_forward
             
-            # Expand backward
+            # Expand backward (same pattern: prepend gate, new_perm = current * gate_perm)
             next_backward = deque()
             while backward_queue:
                 current = backward_queue.popleft()
@@ -128,10 +138,9 @@ class ExactSynthesizer:
                     continue
                 
                 for gate, gate_perm in self.gate_perms:
-                    new_perm = gate_perm * current
+                    new_perm = current * gate_perm
                     
                     if new_perm in forward:
-                        # Found meeting point!
                         fwd_circuit = forward[new_perm]
                         bwd_circuit = current_circuit.copy()
                         bwd_circuit.prepend(gate)
@@ -165,7 +174,7 @@ class ExactSynthesizer:
                 continue
             
             for gate, gate_perm in self.gate_perms:
-                new_perm = gate_perm * current
+                new_perm = current * gate_perm
                 
                 if new_perm not in results:
                     new_circuit = current_circuit.copy()
@@ -219,7 +228,7 @@ class MeetInTheMiddleSynthesizer:
                 continue
             
             for gate, gate_perm in self.gate_perms:
-                new_perm = gate_perm * current
+                new_perm = current * gate_perm
                 
                 if new_perm not in table:
                     new_circuit = current_circuit.copy()
@@ -256,7 +265,7 @@ class MeetInTheMiddleSynthesizer:
                 continue
             
             for gate, gate_perm in self.gate_perms:
-                new_perm = gate_perm * current
+                new_perm = current * gate_perm
                 
                 # Check for meeting point
                 if new_perm in forward_table:
