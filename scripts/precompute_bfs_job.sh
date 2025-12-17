@@ -34,6 +34,9 @@ echo "Width:     $WIDTH"
 echo "Max Depth: $MAX_DEPTH"
 echo ""
 
+# Load Python module (adjust for your cluster)
+module load python3 2>/dev/null || module load python/3.9 2>/dev/null || true
+
 # Activate virtual environment if it exists
 if [ -f "${PROJECT_DIR}/venv/bin/activate" ]; then
     source "${PROJECT_DIR}/venv/bin/activate"
