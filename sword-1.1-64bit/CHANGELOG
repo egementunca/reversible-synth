@@ -1,0 +1,13 @@
+SWORD v1.1
+* minor bug fixes in parsing and rewriting routine
+* library + interface
+* external modules
+
+SWORD v1.0
+* word level term rewriting
+* bit level AIG rewriting
+* increase of performance 
+* improved solve engine
+
+SWORD v0.2
+* changed input format to SMTLIB format

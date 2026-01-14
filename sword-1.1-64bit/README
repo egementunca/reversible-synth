@@ -1,0 +1,33 @@
+SWORD v1.1
+==========
+
+Copyright (c) 2009 Jean Christoph Jung, Finn Haedicke, Robert Wille, Andre Suelflow, and Rolf Drechsler
+University of Bremen, Germany
+http://www.informatik.uni-bremen.de/agra/eng/
+
+
+The software is intellectual property of the University of Bremen, Germany. You can freely redistritbute this software for non-comercial pruposes as long as 
+(1) it includes a reference to the authors and
+(2) all files are included. The files in this package are
+    README          -- the readme file for SWORD
+    LICENSE_MINISAT -- the license file for MiniSat, which is used as underlying SAT solver
+    LICENSE_Smt2Sf  -- the license file for Smt2Sf, which is used as readin-routine for the QF_BV input laguage
+
+    bin/sword       -- the SWORD solver
+    
+    lib/libsword.a  -- the SWORD library
+
+    include/        -- all necessary header files: libsword.h, libmodule.h, SwordOpcode.h, SolverTypes.h
+                       and one example module: modules/CardinalityLessThan.h
+
+    doc/            -- a tutorial:            tutorial.pdf
+                       two small examples:    example1.cpp example2.cpp
+                       compile instructions:  USAGE, Makefile
+                       
+
+Use at your own risk!
+In no event shall the University of Bremen, or the authors be liable for any damages whatsoever (including without limitation damages for loss of business profits, business interruption, loss of business information, or any other pecuniary loss) arising from the use of or inability to use the software, even if the the University of Bremen has been advised of the possibility of such damages.
+
+If you have any questions feel free to contact us at:
+  sword@informatik.uni-bremen.de
+

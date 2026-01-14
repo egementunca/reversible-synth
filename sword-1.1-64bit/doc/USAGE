@@ -1,0 +1,11 @@
+Compilation instruction
+-----------------------
+
+Assuming main.cpp to be the source file that uses SWORD, the following commands will 
+compile and link it.
+
+  g++ -o main.o -c main.cpp -I$SWORDPATH/include/
+  g++ -o main main.o $SWORDPATH/lib/libsword.a 
+
+An example Makefile is contained in doc/Makefile.
+
